@@ -1,9 +1,7 @@
 """
-Load Marathi–English sample data from Excel and store in MSSQL or SQLite.
-Run: python excel_to_mssql.py
-On Mac (no SQL Server): USE_SQLITE=1 python excel_to_mssql.py
+Load Marathi–English sample data from Excel into SQLite or MSSQL (pymssql).
+Run: python excel_to_mssql.py  (or USE_SQLITE=1 for local SQLite)
 """
-import os
 import sqlite3
 import sys
 from pathlib import Path
@@ -17,11 +15,6 @@ except ImportError:
 import pandas as pd
 
 try:
-    import pyodbc
-    HAS_PYODBC = True
-except ImportError:
-    HAS_PYODBC = False
-try:
     import pymssql
     HAS_PYMSSQL = True
 except ImportError:
@@ -33,12 +26,11 @@ from config import (
     TABLE_NAME,
     USE_SQLITE,
     SQLITE_PATH,
-    get_connection_string,
     get_pymssql_kwargs,
 )
 
-if not USE_SQLITE and not HAS_PYODBC and not HAS_PYMSSQL:
-    print("Install pyodbc or pymssql for MSSQL, or set USE_SQLITE=1 for local SQLite.")
+if not USE_SQLITE and not HAS_PYMSSQL:
+    print("Install pymssql for MSSQL (pip install pymssql), or set USE_SQLITE=1 for local SQLite.")
     sys.exit(1)
 
 
@@ -123,8 +115,8 @@ def create_table_sqlite(cursor, table_name):
     cursor.connection.commit()
 
 
-def insert_batch(cursor, table_name, df, param_style="?"):
-    """Insert DataFrame into MSSQL (batch). param_style: '?' for pyodbc, '%s' for pymssql."""
+def insert_batch(cursor, table_name, df, param_style="%s"):
+    """Insert DataFrame (batch). param_style: '?' for SQLite, '%s' for pymssql."""
     ph = param_style
     sql = f"INSERT INTO [{table_name}] (marathi_text, english_text) VALUES ({ph}, {ph})"
     for _, row in df.iterrows():
@@ -143,18 +135,11 @@ def get_connection_sqlite():
 
 
 def get_connection_mssql():
-    """Return (conn, cursor, param_style) using pyodbc or pymssql."""
-    use_pymssql = os.getenv("USE_PYMSSQL", "").strip().lower() in ("1", "true", "yes")
-    if use_pymssql and HAS_PYMSSQL:
-        conn = pymssql.connect(**get_pymssql_kwargs())
-        return conn, conn.cursor(), "%s"
-    if HAS_PYODBC:
-        conn = pyodbc.connect(get_connection_string())
-        return conn, conn.cursor(), "?"
-    if HAS_PYMSSQL:
-        conn = pymssql.connect(**get_pymssql_kwargs())
-        return conn, conn.cursor(), "%s"
-    raise RuntimeError("No MSSQL driver (pyodbc or pymssql) available.")
+    """Return (conn, cursor, param_style) using pymssql only."""
+    if not HAS_PYMSSQL:
+        raise RuntimeError("pymssql not installed. Install it: pip install pymssql")
+    conn = pymssql.connect(**get_pymssql_kwargs())
+    return conn, conn.cursor(), "%s"
 
 
 def run():

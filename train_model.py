@@ -40,7 +40,7 @@ from config import (
 
 
 def load_data_from_sqlite():
-    """Load marathi_text, english_text from SQLite (or MSSQL – add if needed)."""
+    """Load marathi_text, english_text from SQLite."""
     if not USE_SQLITE:
         raise NotImplementedError("Training from MSSQL not implemented; use USE_SQLITE=1 and run excel_to_mssql.py first.")
     db_path = Path(__file__).resolve().parent / SQLITE_PATH

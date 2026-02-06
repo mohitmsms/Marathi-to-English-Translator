@@ -2,9 +2,8 @@
 pandas>=2.0.0
 openpyxl>=3.1.0
 
-# MSSQL (use one of the following)
-pyodbc>=5.0.0
-# pymssql>=2.2.0   # alternative on Linux/Mac if pyodbc not available
+# MSSQL – pymssql only
+pymssql>=2.2.0
 
 # Optional: load .env
 python-dotenv>=1.0.0
