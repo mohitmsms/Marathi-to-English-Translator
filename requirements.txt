@@ -1,0 +1,17 @@
+# Excel and data
+pandas>=2.0.0
+openpyxl>=3.1.0
+
+# MSSQL (use one of the following)
+pyodbc>=5.0.0
+# pymssql>=2.2.0   # alternative on Linux/Mac if pyodbc not available
+
+# Optional: load .env
+python-dotenv>=1.0.0
+
+# Translation model (fine-tuning)
+torch>=2.0.0
+transformers>=4.36.0
+datasets>=2.14.0
+sentencepiece>=0.1.99
+accelerate>=0.25.0

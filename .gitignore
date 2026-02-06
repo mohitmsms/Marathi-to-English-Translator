@@ -1,0 +1,22 @@
+# Environment and secrets
+.venv/
+venv/
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+
+# Large files (GitHub limit 100 MB) – regenerate locally
+marathi_english.db
+marathi_english_model/
