@@ -26,6 +26,7 @@ from config import (
     TABLE_NAME,
     USE_SQLITE,
     SQLITE_PATH,
+    INSERT_BATCH_SIZE,
     get_pymssql_kwargs,
 )
 
@@ -116,14 +117,23 @@ def create_table_sqlite(cursor, table_name):
 
 
 def insert_batch(cursor, table_name, df, param_style="%s"):
-    """Insert DataFrame (batch). param_style: '?' for SQLite, '%s' for pymssql."""
+    """Insert DataFrame in batches (executemany per chunk). param_style: '?' for SQLite, '%s' for pymssql."""
     ph = param_style
     sql = f"INSERT INTO [{table_name}] (marathi_text, english_text) VALUES ({ph}, {ph})"
-    for _, row in df.iterrows():
-        m = str(row["marathi_text"]).replace("'", "''")[:4000]
-        e = str(row["english_text"]).replace("'", "''")[:4000]
-        cursor.execute(sql, (m, e))
-    cursor.connection.commit()
+    total = len(df)
+    batch_size = INSERT_BATCH_SIZE if INSERT_BATCH_SIZE > 0 else total
+    inserted = 0
+    for start in range(0, total, batch_size):
+        chunk = df.iloc[start : start + batch_size]
+        rows = [
+            (str(m).replace("'", "''")[:4000], str(e).replace("'", "''")[:4000])
+            for m, e in zip(chunk["marathi_text"], chunk["english_text"])
+        ]
+        cursor.executemany(sql, rows)
+        cursor.connection.commit()
+        inserted += len(rows)
+        if batch_size < total:
+            print(f"  Inserted {inserted}/{total} rows...")
 
 
 def get_connection_sqlite():

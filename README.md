@@ -58,6 +58,7 @@ python train_model.py
 | EXCEL_PATH | Marathi to English data for LLM.xlsx | Input Excel file |
 | EXCEL_SHEET | 0 | Sheet index or name |
 | TRANSLATION_TABLE | marathi_english_pairs | Table name |
+| INSERT_BATCH_SIZE | 5000 | Rows per insert batch (0 = single bulk insert) |
 | MSSQL_SERVER | localhost | SQL Server instance |
 | MSSQL_DATABASE | marathi_english | Database name |
 | MSSQL_UID / MSSQL_PWD | (empty) | SQL auth |

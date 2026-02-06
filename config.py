@@ -17,6 +17,8 @@ MSSQL_PWD = os.getenv("MSSQL_PWD", "")
 
 # Table to store translation pairs
 TABLE_NAME = os.getenv("TRANSLATION_TABLE", "marathi_english_pairs")
+# Rows per batch when inserting (0 = single bulk insert)
+INSERT_BATCH_SIZE = int(os.getenv("INSERT_BATCH_SIZE", "5000"))
 
 # SQLite when no MSSQL server (default on macOS)
 _default_sqlite = "1" if sys.platform == "darwin" else ""
